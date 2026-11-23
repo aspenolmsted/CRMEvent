@@ -1,0 +1,52 @@
+<?php
+
+if (!defined('sugarEntry') || !sugarEntry) {
+    die('Not A Valid Entry Point');
+}
+
+$mod_strings = [
+    'LBL_MODULE_NAME' => 'Registrations',
+    'LBL_MODULE_TITLE' => 'Registrations: Home',
+    'LBL_SEARCH_FORM_TITLE' => 'Registration Search',
+    'LBL_LIST_FORM_TITLE' => 'Registration List',
+    'LBL_NEW_FORM_TITLE' => 'New Registration',
+    'LNK_NEW_RECORD' => 'Create Registration',
+    'LNK_LIST' => 'View Registrations',
+    'LBL_LIST_NAME' => 'Confirmation #',
+
+    'LBL_ID' => 'ID',
+    'LBL_NAME' => 'Confirmation Code',
+    'LBL_DATE_ENTERED' => 'Date Created',
+    'LBL_DATE_MODIFIED' => 'Date Modified',
+    'LBL_MODIFIED' => 'Modified By',
+    'LBL_MODIFIED_ID' => 'Modified By Id',
+    'LBL_MODIFIED_NAME' => 'Modified By Name',
+    'LBL_CREATED' => 'Created By',
+    'LBL_CREATED_ID' => 'Created By Id',
+    'LBL_DESCRIPTION' => 'Notes / Special Requests',
+    'LBL_DELETED' => 'Deleted',
+    'LBL_ASSIGNED_TO_ID' => 'Assigned User Id',
+    'LBL_ASSIGNED_TO_NAME' => 'Assigned to',
+
+    'LBL_EVENT_ID' => 'Event ID',
+    'LBL_EVENT_NAME' => 'Event',
+    'LBL_EVENT' => 'Event',
+    'LBL_TICKET_TYPE_ID' => 'Ticket Type ID',
+    'LBL_TICKET_TYPE_NAME' => 'Ticket Type',
+    'LBL_TICKET_TYPE' => 'Ticket Type',
+    'LBL_CONTACT_ID' => 'Attendee Contact ID',
+    'LBL_CONTACT_NAME' => 'Attendee',
+    'LBL_CONTACT' => 'Attendee',
+    'LBL_PURCHASED_BY_CONTACT_ID' => 'Purchaser Contact ID',
+    'LBL_PURCHASED_BY_CONTACT_NAME' => 'Purchased By',
+    'LBL_PURCHASED_BY_CONTACT' => 'Purchased By',
+    'LBL_REGISTRATION_STATUS' => 'Status',
+    'LBL_QUANTITY' => 'Quantity / Seats',
+    'LBL_AMOUNT_PAID' => 'Amount Paid',
+    'LBL_CURRENCY' => 'Currency',
+    'LBL_TRANSACTION_ID' => 'Transaction ID',
+    'LBL_CHECKIN_TOKEN' => 'Check-In QR Token',
+    'LBL_CHECKED_IN_AT' => 'Checked In At',
+    'LBL_BADGE_NAME' => 'Badge Name',
+    'LBL_DIETARY_RESTRICTIONS' => 'Dietary / Accessibility Notes',
+];
