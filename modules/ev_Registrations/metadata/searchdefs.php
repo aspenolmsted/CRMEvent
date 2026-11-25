@@ -19,6 +19,7 @@ $searchdefs['ev_Registrations'] = [
             'name',
             'event_name',
             'ticket_type_name',
+            'event_seat_name',
             'contact_name',
             'registration_status',
             'transaction_id',

@@ -29,6 +29,8 @@ class ev_Registrations extends Basic
     public $event_name;
     public $ticket_type_id;
     public $ticket_type_name;
+    public $event_seat_id;
+    public $event_seat_name;
     public $contact_id;
     public $contact_name;
     public $purchased_by_contact_id;
@@ -42,6 +44,8 @@ class ev_Registrations extends Basic
     public $checked_in_at;
     public $badge_name;
     public $dietary_restrictions;
+    public $selected_seat_ids;
+    public $assigned_seats_summary;
 
     public function bean_implements($interface)
     {

@@ -12,7 +12,7 @@ $subpanel_layout = [
         'name' => [
             'vname' => 'LBL_NAME',
             'widget_class' => 'SubPanelDetailViewLink',
-            'width' => '20%',
+            'width' => '18%',
         ],
         'contact_name' => [
             'vname' => 'LBL_CONTACT_NAME',
@@ -20,7 +20,7 @@ $subpanel_layout = [
             'widget_class' => 'SubPanelDetailViewLink',
             'target_record_key' => 'contact_id',
             'target_module' => 'Contacts',
-            'width' => '25%',
+            'width' => '22%',
         ],
         'ticket_type_name' => [
             'vname' => 'LBL_TICKET_TYPE_NAME',
@@ -28,20 +28,24 @@ $subpanel_layout = [
             'widget_class' => 'SubPanelDetailViewLink',
             'target_record_key' => 'ticket_type_id',
             'target_module' => 'ev_TicketTypes',
-            'width' => '20%',
+            'width' => '18%',
         ],
-        'quantity' => [
-            'vname' => 'LBL_QUANTITY',
-            'width' => '10%',
+        'event_seat_name' => [
+            'vname' => 'LBL_EVENT_SEAT_NAME',
+            'module' => 'ev_EventSeats',
+            'widget_class' => 'SubPanelDetailViewLink',
+            'target_record_key' => 'event_seat_id',
+            'target_module' => 'ev_EventSeats',
+            'width' => '18%',
         ],
         'registration_status' => [
             'vname' => 'LBL_REGISTRATION_STATUS',
-            'width' => '20%',
+            'width' => '18%',
         ],
         'edit_button' => [
             'widget_class' => 'SubPanelEditButton',
             'module' => 'ev_Registrations',
-            'width' => '5%',
+            'width' => '6%',
         ],
     ],
 ];

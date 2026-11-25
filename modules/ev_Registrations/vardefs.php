@@ -64,6 +64,33 @@ $dictionary['ev_Registrations'] = [
             'source' => 'non-db',
             'vname' => 'LBL_TICKET_TYPE',
         ],
+        'event_seat_id' => [
+            'name' => 'event_seat_id',
+            'vname' => 'LBL_EVENT_SEAT_ID',
+            'type' => 'id',
+            'reportable' => false,
+        ],
+        'event_seat_name' => [
+            'name' => 'event_seat_name',
+            'rname' => 'name',
+            'id_name' => 'event_seat_id',
+            'vname' => 'LBL_EVENT_SEAT_NAME',
+            'type' => 'relate',
+            'link' => 'ev_event_seats',
+            'table' => 'ev_event_seats',
+            'isnull' => 'true',
+            'module' => 'ev_EventSeats',
+            'dbType' => 'varchar',
+            'len' => '255',
+            'source' => 'non-db',
+        ],
+        'ev_event_seats' => [
+            'name' => 'ev_event_seats',
+            'type' => 'link',
+            'relationship' => 'ev_event_seats_ev_registrations',
+            'source' => 'non-db',
+            'vname' => 'LBL_EVENT_SEAT',
+        ],
         'contact_id' => [
             'name' => 'contact_id',
             'vname' => 'LBL_CONTACT_ID',
@@ -141,7 +168,7 @@ $dictionary['ev_Registrations'] = [
             'type' => 'currency',
             'dbType' => 'decimal',
             'len' => '26,6',
-            'default' => 0,
+            'default' => '0.000000',
         ],
         'currency_id' => [
             'name' => 'currency_id',
@@ -178,6 +205,19 @@ $dictionary['ev_Registrations'] = [
             'vname' => 'LBL_DIETARY_RESTRICTIONS',
             'type' => 'text',
         ],
+        'selected_seat_ids' => [
+            'name' => 'selected_seat_ids',
+            'vname' => 'LBL_SELECTED_SEAT_IDS',
+            'type' => 'text',
+            'reportable' => false,
+        ],
+        'assigned_seats_summary' => [
+            'name' => 'assigned_seats_summary',
+            'vname' => 'LBL_ASSIGNED_SEATS_SUMMARY',
+            'type' => 'varchar',
+            'len' => '255',
+            'readonly' => true,
+        ],
     ],
     'relationships' => [
         'fp_events_ev_registrations' => [
@@ -196,6 +236,15 @@ $dictionary['ev_Registrations'] = [
             'rhs_module' => 'ev_Registrations',
             'rhs_table' => 'ev_registrations',
             'rhs_key' => 'ticket_type_id',
+            'relationship_type' => 'one-to-many',
+        ],
+        'ev_event_seats_ev_registrations' => [
+            'lhs_module' => 'ev_EventSeats',
+            'lhs_table' => 'ev_event_seats',
+            'lhs_key' => 'id',
+            'rhs_module' => 'ev_Registrations',
+            'rhs_table' => 'ev_registrations',
+            'rhs_key' => 'event_seat_id',
             'relationship_type' => 'one-to-many',
         ],
         'contacts_ev_registrations' => [
@@ -232,3 +281,6 @@ $dictionary['ev_Registrations'] = [
 ];
 
 VardefManager::createVardef('ev_Registrations', 'ev_Registrations', ['basic', 'assignable']);
+
+// Allow name (Confirmation Code) to be auto-generated on save without frontend required block
+$dictionary['ev_Registrations']['fields']['name']['required'] = false;

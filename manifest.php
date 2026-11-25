@@ -2,24 +2,44 @@
 
 $manifest = [
     'acceptable_sugar_versions' => [
-        'regex_matches' => ['7\.14\..*'],
+            '^6\.5\.[0-9]+$',            
+            '^7\.[0-9]+\.[0-9]+$',
+            '^8\.[0-9]+\.[0-9]+$',
     ],
     'acceptable_sugar_flavors' => ['CE'],
     'readme' => '',
     'key' => 'ev',
     'author' => 'Aspen Olmsted',
-    'description' => 'Event Ticketing and Registration extension for SuiteCRM (extends FP_events with ev_TicketTypes and ev_Registrations).',
+    'description' => 'Event Ticketing, Registration, and Interactive Venue Seating Map extension for SuiteCRM (extends FP_events with ev_TicketTypes, ev_Registrations, ev_Venues, ev_VenueSeats, and ev_EventSeats).',
     'icon' => '',
     'is_uninstallable' => true,
     'name' => 'CRMEvent',
     'published_date' => '2026-11-23 00:00:00',
     'type' => 'module',
-    'version' => '1.0.0',
+    'version' => '2.0.16',
 ];
 
 $installdefs = [
-    'id' => 'CRMEvent_v1_0_0',
+    'id' => 'CRMEvent_v2_0_0',
     'beans' => [
+        [
+            'module' => 'ev_Venues',
+            'class' => 'ev_Venues',
+            'path' => 'modules/ev_Venues/ev_Venues.php',
+            'tab' => true,
+        ],
+        [
+            'module' => 'ev_VenueSeats',
+            'class' => 'ev_VenueSeats',
+            'path' => 'modules/ev_VenueSeats/ev_VenueSeats.php',
+            'tab' => false,
+        ],
+        [
+            'module' => 'ev_EventSeats',
+            'class' => 'ev_EventSeats',
+            'path' => 'modules/ev_EventSeats/ev_EventSeats.php',
+            'tab' => true,
+        ],
         [
             'module' => 'ev_TicketTypes',
             'class' => 'ev_TicketTypes',
@@ -34,6 +54,18 @@ $installdefs = [
         ],
     ],
     'copy' => [
+        [
+            'from' => '<basepath>/modules/ev_Venues',
+            'to' => 'modules/ev_Venues',
+        ],
+        [
+            'from' => '<basepath>/modules/ev_VenueSeats',
+            'to' => 'modules/ev_VenueSeats',
+        ],
+        [
+            'from' => '<basepath>/modules/ev_EventSeats',
+            'to' => 'modules/ev_EventSeats',
+        ],
         [
             'from' => '<basepath>/modules/ev_TicketTypes',
             'to' => 'modules/ev_TicketTypes',
@@ -78,10 +110,19 @@ $installdefs = [
     ],
     'logic_hooks' => [
         [
+            'module' => 'FP_events',
+            'hook' => 'after_save',
+            'order' => 10,
+            'description' => 'Clone Venue Seats into Event Seats when a Venue is attached to an Event',
+            'file' => 'modules/ev_Venues/ev_EventVenueHooks.php',
+            'class' => 'ev_EventVenueHooks',
+            'function' => 'syncVenueSeatsToEvent',
+        ],
+        [
             'module' => 'ev_Registrations',
             'hook' => 'before_save',
             'order' => 10,
-            'description' => 'Generate check-in token and confirmation reference on registration save',
+            'description' => 'Auto-generate confirmation code and QR check-in token on registration save',
             'file' => 'modules/ev_Registrations/ev_RegistrationsHooks.php',
             'class' => 'ev_RegistrationsHooks',
             'function' => 'beforeSaveRegistration',
@@ -90,7 +131,7 @@ $installdefs = [
             'module' => 'ev_Registrations',
             'hook' => 'after_save',
             'order' => 10,
-            'description' => 'Roll up ticket quantities sold and event remaining seats, and sync native FP_events attendee link',
+            'description' => 'Roll up ticket quantities sold, event remaining seats, sync native attendee link, and reserve assigned seat',
             'file' => 'modules/ev_Registrations/ev_RegistrationsHooks.php',
             'class' => 'ev_RegistrationsHooks',
             'function' => 'afterSaveRegistration',
@@ -99,7 +140,7 @@ $installdefs = [
             'module' => 'ev_Registrations',
             'hook' => 'after_delete',
             'order' => 10,
-            'description' => 'Recalculate ticket quantities sold and event remaining seats after registration deletion',
+            'description' => 'Recalculate ticket quantities sold, event remaining seats, and release assigned seat after deletion',
             'file' => 'modules/ev_Registrations/ev_RegistrationsHooks.php',
             'class' => 'ev_RegistrationsHooks',
             'function' => 'afterDeleteRegistration',

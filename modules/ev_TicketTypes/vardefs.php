@@ -43,7 +43,7 @@ $dictionary['ev_TicketTypes'] = [
             'type' => 'currency',
             'dbType' => 'decimal',
             'len' => '26,6',
-            'default' => 0,
+            'default' => '0.000000',
             'required' => true,
         ],
         'fair_market_value' => [
@@ -52,7 +52,7 @@ $dictionary['ev_TicketTypes'] = [
             'type' => 'currency',
             'dbType' => 'decimal',
             'len' => '26,6',
-            'default' => 0,
+            'default' => '0.000000',
         ],
         'currency_id' => [
             'name' => 'currency_id',

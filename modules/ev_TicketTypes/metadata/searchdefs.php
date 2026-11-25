@@ -3,10 +3,7 @@ $searchdefs['ev_TicketTypes'] = [
     'templateMeta' => [
         'maxColumns' => '3',
         'maxColumnsBasic' => '3',
-        'widths' => [
-            'label' => '10',
-            'field' => '30',
-        ],
+        'widths' => ['label' => '10', 'field' => '30'],
     ],
     'layout' => [
         'basic_search' => [
@@ -16,10 +13,9 @@ $searchdefs['ev_TicketTypes'] = [
         ],
         'advanced_search' => [
             'name',
+            'event_id',
             'event_name',
-            'price',
             'status',
-            'assigned_user_id',
         ],
     ],
 ];

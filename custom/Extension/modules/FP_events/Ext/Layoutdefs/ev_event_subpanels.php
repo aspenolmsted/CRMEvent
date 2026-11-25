@@ -25,3 +25,14 @@ $layout_defs['FP_events']['subpanel_setup']['ev_registrations'] = [
         ['widget_class' => 'SubPanelTopCreateButton'],
     ],
 ];
+
+$layout_defs['FP_events']['subpanel_setup']['ev_event_seats'] = [
+    'order' => 30,
+    'module' => 'ev_EventSeats',
+    'subpanel_name' => 'default',
+    'sort_order' => 'asc',
+    'sort_by' => 'name',
+    'title_key' => 'LBL_EV_EVENT_SEATS_SUBPANEL_TITLE',
+    'get_subpanel_data' => 'ev_event_seats',
+    'top_buttons' => [],
+];
