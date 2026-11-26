@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="Upcoming Events List">
+        <message>Displays public events from SuiteCRM with interactive seat map registration.</message>
+    </layout>
+</metadata>

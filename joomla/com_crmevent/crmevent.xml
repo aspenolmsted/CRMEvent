@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" method="upgrade">
+    <name>COM_CRMEVENT</name>
+    <author>Alliance Consulting</author>
+    <creationDate>2026-11</creationDate>
+    <copyright>Copyright (C) 2026 Alliance Consulting. All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later</license>
+    <version>1.0.0</version>
+    <description>Public event listing and interactive SVG assigned-seat ticket registration integrated with SuiteCRM CRMEvent.</description>
+    <namespace path="src">Alliance\Component\Crmevent</namespace>
+
+    <files folder="site">
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+
+    <administration>
+        <menu link="option=com_crmevent">CRMEvent</menu>
+        <files folder="admin">
+            <filename>config.xml</filename>
+            <folder>services</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+        </files>
+    </administration>
+</extension>

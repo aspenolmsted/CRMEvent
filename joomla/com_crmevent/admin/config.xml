@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <fieldset name="suitecrm" label="SuiteCRM Connection Settings" description="Configure your SuiteCRM 7.14 REST v4_1 credentials.">
+        <field
+            name="suitecrm_url"
+            type="url"
+            label="SuiteCRM Base URL"
+            description="Example: https://www.alliance.biz/suitecrm (no trailing slash)"
+            required="true"
+        />
+        <field
+            name="suitecrm_user"
+            type="text"
+            label="API Username"
+            description="SuiteCRM user account with permissions on FP_events, ev_Venues, ev_VenueSeats, ev_EventSeats, ev_TicketTypes, ev_Registrations, and Contacts."
+            required="true"
+        />
+        <field
+            name="suitecrm_password"
+            type="password"
+            label="API Password"
+            description="Plaintext password (hashed to MD5 automatically for SuiteCRM REST v4_1 login)."
+            required="true"
+        />
+        <field
+            name="default_reg_status"
+            type="list"
+            label="Default Registration Status"
+            default="Confirmed"
+        >
+            <option value="Confirmed">Confirmed (Immediately Reserves Seats)</option>
+            <option value="Pending">Pending Payment (Holds Seats)</option>
+        </field>
+    </fieldset>
+</config>
