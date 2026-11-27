@@ -10,6 +10,7 @@ use Joomla\CMS\Http\HttpFactory;
 class SuiteCrmClient
 {
     private string $endpoint;
+    private string $baseUrl;
     private string $username;
     private string $passwordHash;
     private ?string $sessionId = null;
@@ -17,15 +18,15 @@ class SuiteCrmClient
     public function __construct()
     {
         $params = ComponentHelper::getParams('com_crmevent');
-        $baseUrl = rtrim((string) $params->get('suitecrm_url', ''), '/');
-        $this->endpoint = $baseUrl . '/service/v4_1/rest.php';
+        $this->baseUrl = rtrim((string) $params->get('suitecrm_url', ''), '/');
+        $this->endpoint = $this->baseUrl . '/service/v4_1/rest.php';
         $this->username = (string) $params->get('suitecrm_user', '');
         $this->passwordHash = md5((string) $params->get('suitecrm_password', ''));
     }
 
     private function call(string $method, array $restData): array
     {
-        if (empty($this->endpoint) || $this->endpoint === '/service/v4_1/rest.php') {
+        if ($this->baseUrl === '') {
             throw new \RuntimeException('SuiteCRM URL is not configured in CRMEvent component options.');
         }
 
@@ -165,100 +166,32 @@ class SuiteCrmClient
     public function getEventSeatMapData(string $eventId): array
     {
         $safeEventId = preg_replace('/[^a-zA-Z0-9\-]/', '', $eventId);
-
-        // 1. Fetch Event details
-        $event = $this->findEntryById(
-            'FP_events',
-            $safeEventId,
-            array('id', 'name', 'date_start', 'description', 'venue_id_c', 'capacity_c', 'seats_remaining_c')
-        );
-        if (!$event || empty($event['id'])) {
-            throw new \RuntimeException('Event not found in SuiteCRM.');
+        if ($safeEventId === '') {
+            throw new \RuntimeException('Invalid event ID.');
         }
 
-        // 2. Fetch Venue layout_json (decode HTML entities returned by SuiteCRM REST API)
-        $layout = array('items' => array());
-        $venueName = '';
-        $safeVenueId = '';
-        if (!empty($event['venue_id_c'])) {
-            $safeVenueId = preg_replace('/[^a-zA-Z0-9\-]/', '', $event['venue_id_c']);
-            $venue = $this->findEntryById(
-                'ev_Venues',
-                $safeVenueId,
-                array('id', 'name', 'layout_json')
-            );
-            if ($venue !== null) {
-                $venueName = isset($venue['name']) ? $venue['name'] : '';
-                $rawLayout = html_entity_decode((string) (isset($venue['layout_json']) ? $venue['layout_json'] : ''), ENT_QUOTES, 'UTF-8');
-                $decodedLayout = json_decode($rawLayout, true);
-                if (is_array($decodedLayout)) {
-                    $layout = $decodedLayout;
-                }
-            }
+        if ($this->baseUrl === '') {
+            throw new \RuntimeException('SuiteCRM URL is not configured in CRMEvent component options.');
         }
 
-        // 3. Fetch ALL VenueSeats across pages so multi-venue seats never truncate
-        $coordMap = array();
-        if ($safeVenueId !== '') {
-            $allVenueSeats = $this->fetchAllEntries(
-                'ev_VenueSeats',
-                array('id', 'venue_id', 'pos_x', 'pos_y', 'seat_type'),
-                500
-            );
-            foreach ($allVenueSeats as $vs) {
-                if (($vs['venue_id'] ?? '') === $safeVenueId) {
-                    $coordMap[$vs['id']] = $vs;
-                }
-            }
+        $url = $this->baseUrl . '/index.php?entryPoint=crmevent_publicmap&event_id=' . urlencode($safeEventId);
+        $http = (new HttpFactory())->getHttp();
+        $response = $http->get($url);
+
+        $decoded = json_decode((string) $response->body, true);
+        if ($response->code !== 200 || !is_array($decoded)) {
+            $errMsg = is_array($decoded) && isset($decoded['error'])
+                ? $decoded['error']
+                : ('Failed to load seat map (HTTP ' . $response->code . ').');
+            throw new \RuntimeException($errMsg);
         }
-
-        // 4. Fetch ALL EventSeats and merge coordinates
-        $allEventSeats = $this->fetchAllEntries(
-            'ev_EventSeats',
-            array('id', 'name', 'event_id', 'venue_seat_id', 'section_name', 'seat_status'),
-            500
-        );
-
-        $seats = array();
-        foreach ($allEventSeats as $es) {
-            if (($es['event_id'] ?? '') !== $safeEventId) {
-                continue;
-            }
-            $vsId = isset($es['venue_seat_id']) ? $es['venue_seat_id'] : '';
-            $vs = isset($coordMap[$vsId]) ? $coordMap[$vsId] : array();
-            $es['pos_x'] = (int) (isset($vs['pos_x']) ? $vs['pos_x'] : 0);
-            $es['pos_y'] = (int) (isset($vs['pos_y']) ? $vs['pos_y'] : 0);
-            $es['seat_type'] = isset($vs['seat_type']) ? $vs['seat_type'] : 'Standard';
-            $seats[] = $es;
-        }
-
-        usort($seats, static function (array $a, array $b): int {
-            return strnatcmp((string) ($a['name'] ?? ''), (string) ($b['name'] ?? ''));
-        });
-
-        // 5. Fetch Active Ticket Types for this Event
-        $allTicketTypes = $this->fetchAllEntries(
-            'ev_TicketTypes',
-            array('id', 'name', 'event_id', 'status', 'price', 'quantity_available', 'quantity_sold', 'description'),
-            200
-        );
-        $ticketTypes = array();
-        foreach ($allTicketTypes as $tt) {
-            if (($tt['event_id'] ?? '') === $safeEventId && ($tt['status'] ?? '') === 'Active') {
-                $ticketTypes[] = $tt;
-            }
-        }
-
-        usort($ticketTypes, static function (array $a, array $b): int {
-            return (float) ($a['price'] ?? 0) <=> (float) ($b['price'] ?? 0);
-        });
 
         return array(
-            'event'        => $event,
-            'venue_name'   => $venueName,
-            'layout'       => $layout,
-            'seats'        => $seats,
-            'ticket_types' => $ticketTypes,
+            'event'        => isset($decoded['event']) ? $decoded['event'] : array(),
+            'venue_name'   => isset($decoded['venue_name']) ? $decoded['venue_name'] : '',
+            'layout'       => isset($decoded['layout']) ? $decoded['layout'] : array('items' => array()),
+            'seats'        => isset($decoded['seats']) ? $decoded['seats'] : array(),
+            'ticket_types' => isset($decoded['ticket_types']) ? $decoded['ticket_types'] : array(),
         );
     }
 

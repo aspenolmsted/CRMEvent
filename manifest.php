@@ -2,9 +2,9 @@
 
 $manifest = [
     'acceptable_sugar_versions' => [
-            '^6\.5\.[0-9]+$',            
-            '^7\.[0-9]+\.[0-9]+$',
-            '^8\.[0-9]+\.[0-9]+$',
+        '^6\.5\.[0-9]+$',
+        '^7\.[0-9]+\.[0-9]+$',
+        '^8\.[0-9]+\.[0-9]+$',
     ],
     'acceptable_sugar_flavors' => ['CE'],
     'readme' => '',
@@ -14,9 +14,9 @@ $manifest = [
     'icon' => '',
     'is_uninstallable' => true,
     'name' => 'CRMEvent',
-    'published_date' => '2026-11-23 00:00:00',
+    'published_date' => '2026-11-27 00:00:00',
     'type' => 'module',
-    'version' => '2.0.16',
+    'version' => '2.0.21',
 ];
 
 $installdefs = [
@@ -73,6 +73,10 @@ $installdefs = [
         [
             'from' => '<basepath>/modules/ev_Registrations',
             'to' => 'modules/ev_Registrations',
+        ],
+        [
+            'from' => '<basepath>/custom/Extension/application/Ext/EntryPointRegistry/crmevent_publicmap.php',
+            'to' => 'custom/Extension/application/Ext/EntryPointRegistry/crmevent_publicmap.php',
         ],
         [
             'from' => '<basepath>/custom/Extension/modules/FP_events/Ext/Vardefs/ev_event_registration_fields.php',
