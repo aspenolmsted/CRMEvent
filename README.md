@@ -1,54 +1,63 @@
-# SuiteCRM Event Registration Extension
+# CRMEvent — Event Ticketing, Registration & Interactive Venue Seating for SuiteCRM & Joomla
 
-A lightweight, native-first event registration and attendee management extension for **SuiteCRM 8.x** (and backward-compatible with **SuiteCRM 7.x**). Rather than duplicating core CRM event or contact tables, this extension extends standard CRM modules (**Events (`FP_events`)** and **Contacts**) and introduces two focused ticketing and attendance modules: **Ticket Types (`ev_TicketTypes`)** and **Event Registrations (`ev_Registrations`)**.
+**Version:** 2.0.18  
+**Author:** Aspen Olmsted ([alliance.biz](https://alliance.biz))  
+**Compatibility:** SuiteCRM 7.x / 8.x (SugarCRM 6.5 – 8.x CE) & Joomla 4.x / 5.x  
 
----
+## Overview
 
-## Features
-
-* **Hybrid Native + Custom Architecture:** Leverages SuiteCRM's built-in `FP_events` and `Contacts` modules while keeping ticket inventory, pricing tiers, and individual registration ledgers isolated in dedicated tables.
-* **Tiered Ticketing & Inventory Control (`ev_TicketTypes`):** Support multiple admission levels per event (e.g., *General Admission*, *VIP Table*, *Early Bird*, *Student/Free*) with per-tier capacity caps, sales windows, and `fair_market_value` tracking for tax-deductible split calculations.
-* **Individual Attendee & Group Registration Ledger (`ev_Registrations`):** Track individual seats, group/table purchasers (`purchased_by_contact_id`), badge names, dietary restrictions, and registration statuses (*Pending*, *Confirmed*, *Waitlisted*, *Cancelled*, *Checked In*).
-* **Idempotent Payment & QR Check-In Tokens:** Enforce unique payment gateway `transaction_id` indexing to prevent duplicate registrations during webhook retries, and auto-generate unique `checkin_token` UUIDs and `EVT-YYYY-XXXXXX` confirmation codes on creation.
-* **Automated Capacity & Sold-Out Rollups:** Logic hooks recalculate `quantity_sold` on `ev_TicketTypes` and `seats_remaining_c` on `FP_events` in real time, automatically flipping ticket tiers to `Sold_Out` when capacity is reached.
-* **Native Event Invitee Sync:** Automatically links confirmed and checked-in registrants to the parent `FP_events` native invitee relationship (`fp_events_contacts`) so built-in SuiteCRM event reports and target lists stay synchronized.
+**CRMEvent** is an end-to-end event ticketing, registration, and interactive SVG venue seating solution combining a SuiteCRM module package with a native Joomla 4/5 site component (`com_crmevent`). SuiteCRM manages venues, floor-plan layouts, seat templates, ticket tiers, and registrations, while Joomla provides the public event listing, interactive seat-selection map, and multi-seat registration checkout.
 
 ---
 
-## Data Model Overview
+## Repository Structure
 
-### Extended Native Modules
-| Module | Event Management Role | Key Custom Fields |
-| :--- | :--- | :--- |
-| **Events (`FP_events`)** | Master Event Record (Venue, Dates, Budget & Capacity) | `capacity_c`, `seats_remaining_c`, `registration_deadline_c`, `is_public_c`, `virtual_meeting_url_c` |
-| **Contacts** | Event Attendees & Group/Table Purchasers | Subpanels for **Event Registrations** (attended) and **Purchased Registrations** |
-
-### Custom Modules
-| Module | Table | Purpose |
-| :--- | :--- | :--- |
-| **`ev_TicketTypes`** | `ev_ticket_types` | Ticket pricing tiers, fair market values, sales windows, and seat inventory (`quantity_available`, `quantity_sold`). |
-| **`ev_Registrations`** | `ev_registrations` | Individual attendee tickets, confirmation codes, QR check-in tokens (`checkin_token`, `checked_in_at`), and gateway transaction IDs. |
-
-### Entity Relationships
 ```text
-FP_events (1) ──────────< (M) ev_TicketTypes (1) ──────────< (M) ev_Registrations
-    │                                                                 │
-    └─────────────────────< (M) ev_Registrations (M) >────────────────┤
-                                                                      ├── (M:1) Contacts (Attendee)
-                                                                      └── (M:1) Contacts (Purchaser)
-```
-
----
-
-## Installation
-
-1. Download or package `CRMEvent.zip` and upload it in SuiteCRM via **Admin → Module Loader**.
-2. Click **Install** to deploy the custom modules, language strings, and logic hooks.
-3. Navigate to **Admin → Repair → Quick Repair and Rebuild**, scroll to the bottom, and click **Execute** to create the `ev_ticket_types` and `ev_registrations` tables and add the custom columns to `fp_events`.
-4. Open **Admin → Studio → Events → Layouts → EditView & DetailView** to place `Total Capacity`, `Seats Remaining`, `Registration Deadline`, `Public Registration Open`, and `Virtual Meeting URL` onto your Event layout, then click **Save & Deploy**.
-
----
-
-## License
-
-Licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+CRMEvent/
+├── manifest.php                                # SuiteCRM Module Loader manifest (v2.0.18)
+├── README.md
+├── modules/                                    # SuiteCRM custom beans, hooks & public JSON endpoint
+│   ├── ev_EventSeats/
+│   │   ├── ev_EventSeats.php
+│   │   └── publicmap.php                       # Unauthenticated JSON endpoint for Joomla seat maps
+│   ├── ev_Registrations/
+│   │   ├── ev_Registrations.php
+│   │   └── ev_RegistrationsHooks.php           # Confirmation codes, QR tokens & inventory rollups
+│   ├── ev_TicketTypes/
+│   │   └── ev_TicketTypes.php
+│   ├── ev_Venues/
+│   │   ├── ev_Venues.php
+│   │   └── ev_EventVenueHooks.php              # Clones venue seat templates onto events
+│   └── ev_VenueSeats/
+│       └── ev_VenueSeats.php
+├── custom/                                     # SuiteCRM extensions (EntryPointRegistry, Vardefs, Subpanels)
+│   └── Extension/
+│       ├── application/
+│       │   └── Ext/
+│       │       ├── EntryPointRegistry/
+│       │       │   └── crmevent_publicmap.php
+│       │       └── Language/
+│       │           └── en_us.ev_events.php
+│       └── modules/
+│           ├── Contacts/
+│           │   └── Ext/
+│           │       ├── Language/en_us.ev_events.php
+│           │       ├── Layoutdefs/ev_contact_subpanels.php
+│           │       └── Vardefs/ev_contact_registrations_rel.php
+│           └── FP_events/
+│               └── Ext/
+│                   ├── Language/en_us.ev_events.php
+│                   ├── Layoutdefs/ev_event_subpanels.php
+│                   └── Vardefs/ev_event_registration_fields.php
+└── joomla/com_crmevent/                        # Joomla 4/5 Site & Admin Component
+    ├── com_crmevent.xml
+    ├── services/
+    │   └── provider.php
+    └── site/
+        ├── src/
+        │   ├── Controller/
+        │   ├── Helper/
+        │   │   └── SuiteCrmClient.php          # Publicmap fetcher + REST v4.1 registration client
+        │   ├── Model/
+        │   └── View/
+        └── tmpl/                               # Event list, SVG seat map & confirmation views
